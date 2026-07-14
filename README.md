@@ -1,8 +1,8 @@
-<div align="center">
+<div>
 
 <img src="img/preview.jpg" alt="Comets Preview" width="100%" />
 
-# ☄️ Comets
+#  Comets
 
 ### *Fifty digital fireflies falling through a sky of code*
 
