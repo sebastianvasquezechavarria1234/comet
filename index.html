@@ -14,33 +14,27 @@
     <script>
         const canvas = document.getElementById('c');
         const gl = canvas.getContext('webgl');
-
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
         gl.viewport(0, 0, canvas.width, canvas.height);
-
         const vertSrc = `
             attribute vec2 a_position;
             void main() {
                 gl_Position = vec4(a_position, 0.0, 1.0);
             }
         `;
-
         const fragSrc = `
             precision mediump float;
             uniform float u_time;
             uniform vec2 u_resolution;
             uniform sampler2D u_channel0;
-
             void main() {
                 vec2 I = gl_FragCoord.xy;
                 vec2 r = u_resolution.xy;
                 vec4 O = vec4(0.0);
                 vec2 p = (I+I-r) / r.y * mat2(4.0,-3.0,3.0,4.0);
-
                 float t = u_time;
                 float T = t + 0.1*p.x;
-
                 for(int n = 0; n < 50; n++) {
                     float i = float(n);
                     vec3 center = vec3(
@@ -55,13 +49,11 @@
                             q / vec2(texture2D(u_channel0, q/exp(sin(i)+5.0)+vec2(t,i)/8.0).r*40.0, 2.0))
                         );
                 }
-
                 vec4 final = 0.01*p.y*vec4(0.0,1.0,2.0,3.0)+O*O/1e4;
                 vec4 t2 = exp(2.0*final);
                 gl_FragColor = (t2 - 1.0) / (t2 + 1.0);
             }
         `;
-
         function createShader(type, source) {
             const s = gl.createShader(type);
             gl.shaderSource(s, source);
@@ -72,34 +64,27 @@
             }
             return s;
         }
-
         const vert = createShader(gl.VERTEX_SHADER, vertSrc);
         const frag = createShader(gl.FRAGMENT_SHADER, fragSrc);
-
         const prog = gl.createProgram();
         gl.attachShader(prog, vert);
         gl.attachShader(prog, frag);
         gl.linkProgram(prog);
         gl.useProgram(prog);
-
         const buf = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, buf);
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
-
         const pos = gl.getAttribLocation(prog, 'a_position');
         gl.enableVertexAttribArray(pos);
         gl.vertexAttribPointer(pos, 2, gl.FLOAT, false, 0, 0);
-
         const uTime = gl.getUniformLocation(prog, 'u_time');
         const uRes = gl.getUniformLocation(prog, 'u_resolution');
         const uChannel0 = gl.getUniformLocation(prog, 'u_channel0');
-
         function generateNoiseTexture(size) {
             const c = document.createElement('canvas');
             c.width = c.height = size;
             const ctx = c.getContext('2d');
             const imgData = ctx.createImageData(size, size);
-
             for(let i = 0; i < size * size * 4; i += 4) {
                 const v = Math.random() * 255;
                 imgData.data[i] = v;
@@ -110,7 +95,6 @@
             ctx.putImageData(imgData, 0, 0);
             return c;
         }
-
         function createTexture(canvas) {
             const tex = gl.createTexture();
             gl.bindTexture(gl.TEXTURE_2D, tex);
@@ -121,15 +105,12 @@
             gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, canvas);
             return tex;
         }
-
         const noiseCanvas = generateNoiseTexture(512);
         const texture = createTexture(noiseCanvas);
-
         function render(t) {
             gl.activeTexture(gl.TEXTURE0);
             gl.bindTexture(gl.TEXTURE_2D, texture);
             gl.uniform1i(uChannel0, 0);
-
             gl.uniform1f(uTime, t * 0.001);
             gl.uniform2f(uRes, canvas.width, canvas.height);
             gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
