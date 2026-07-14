@@ -1,82 +1,67 @@
 <div align="center">
 
+<img src="img/preview.jpg" alt="Comets Preview" width="100%" />
+
 # ☄️ Comets
 
-### *Cincuenta luciérnagas digitales cayendo por un cielo de código*
+### *Fifty digital fireflies falling through a sky of code*
 
 <br/>
 
-Un shader GLSL que simula cometas con colas brillantes,
-movimiento orgánico y una profundidad que invita a detenerse a mirar.
+A GLSL shader that simulates comets with glowing trails,
+organic motion, and a depth that invites you to stop and watch.
 
-*Inspirado en los residuos del séptimo vuelo de Starship.*
+*Inspired by the debris from SpaceX's 7th Starship test flight.*
 
 <br/>
-
-[![WebGL][webgl-badge]][webgl-url]
-[![License: MIT][license-badge]][license-url]
 
 </div>
 
 ---
 
-## ¿Qué es esto?
+## What is this?
 
-**Comets** es un único archivo HTML que contiene un shader completo: cincuenta partículas coloreadas caen por pantalla con colas de luz que se atenúan, parpadean y se entrelazan.
+**Comets** is a single HTML file containing a complete shader: fifty colored particles fall across the screen with trails of light that fade, flicker, and intertwine.
 
-No hay frameworks. No hay dependencias. No hay build tools.
+No frameworks. No dependencies. No build tools.
 
-Solo un navegador, un canvas y cien líneas de GLSL haciendo magia.
+Just a browser, a canvas, and a hundred lines of GLSL doing magic.
 
-El shader original — [*Starship*][shadertoy-url] de **@XorDev** — fue creado para Shadertoy. Esta versión lo libera de ese entorno y lo hace funcionar autonomamente, con una textura de ruido generada en tiempo real y un pipeline de renderizado WebGL puro.
+The original shader — [*Starship*][shadertoy-url] by **@XorDev** — was built for Shadertoy. This version sets it free, running autonomously with a procedurally generated noise texture and a pure WebGL rendering pipeline.
 
 ---
 
-## Características
+## Features
 
-| | Detalle |
+| | Detail |
 |---|---|
-| **Partículas** | 50 cometas con posiciones independientes |
-| **Color** | RGB con frecuencias separadas por canal — el rojo perdura, el azul se disipa |
-| **Brillo** | Fluctuación exponencial entre *1/e* y *e* por partícula |
-| **Textura** | Ruido procedural generado en Canvas 2D — sin archivos externos |
-| **Tonemap** | `tanh` para un rango dinámico suave y controlado |
-| **Aspect ratio** | Se mantiene estable al redimensionar la ventana |
-| **Dependencias** | Cero |
+| **Particles** | 50 comets with independent positions |
+| **Color** | RGB with separate frequencies per channel — red persists, blue dissipates |
+| **Brightness** | Exponential fluctuation between *1/e* and *e* per particle |
+| **Texture** | Procedural noise generated in Canvas 2D — no external files |
+| **Tonemap** | `tanh` for a smooth, controlled dynamic range |
+| **Aspect ratio** | Stays stable when resizing the window |
+| **Dependencies** | Zero |
 
 ---
 
-## Cómo se ve
+## Quick start
 
-```
-    *       . ·  *
-  ·    *  .    ·
-    .  *  ·  *
-  *    .    ·   *
-    ·   *    .
-```
+### Option A — Double click
 
-*(Abre `index.html` en tu navegador para ver la versión real. No sabemos ASCII art.)*
-
----
-
-## Inicio rápido
-
-### Opción A — Doble clic
-
-1. Clona el repositorio
-2. Abre `index.html` en cualquier navegador moderno
-3. Listo
+1. Clone the repository
+2. Open `index.html` in any modern browser
+3. Done
 
 ```bash
 git clone https://github.com/sebastianvasquezechavarria1234/comet.git
 cd comet
-# Abrir index.html
+# Open index.html
 ```
 
-### Opción B — Servidor local
+### Option B — Local server
 
-Si prefieres usar un servidor (por CORS o cualquier otra razón):
+If you prefer running a server (for CORS or any other reason):
 
 ```bash
 # Python
@@ -86,53 +71,55 @@ python -m http.server 3000
 npx serve .
 ```
 
-Luego abre `http://localhost:3000`.
+Then open `http://localhost:3000`.
 
 ---
 
-## Estructura
+## Structure
 
 ```
 comet/
-├── index.html              ← El proyecto. Ábrelo.
-├── comets.glsl             ← Shader base (referencia)
-├── comets_complete.glsl    ← Variante con textura externa
-└── README.md               ← Lo que estás leyendo
+├── index.html              ← The project. Open it.
+├── comets.glsl             ← Base shader (reference)
+├── comets_complete.glsl    ← Variant with external texture
+├── img/
+│   └── preview.jpg         ← Screenshot
+└── README.md               ← What you're reading
 ```
 
-**`index.html`** es el corazón. Contiene la inicialización de WebGL, la generación de la textura de ruido y el shader completo. No necesitas nada más.
+**`index.html`** is the heart. It contains the WebGL initialization, noise texture generation, and the full shader. Nothing else is needed.
 
-Los archivos `.glsl` existen como referencia para quien quiera llevar el shader a Shadertoy u otros editores.
+The `.glsl` files exist as reference for anyone who wants to bring the shader into Shadertoy or other editors.
 
 ---
 
-## Bajo el capó
+## Under the hood
 
-### El viaje de un píxel
+### The journey of a pixel
 
 ```
-Coordenadas del fragmento
+Fragment coordinates
         │
         ▼
-   Centro + rotación
+   Center + rotation
         │
         ▼
-   ┌─── Loop de 50 partículas ───┐
-   │                              │
-   │  Posición (seno + tiempo)    │
-   │  Color (RGB por índice)      │
-   │  Brillo (exponencial)        │
-   │  Cola (caída de luz + ruido) │
-   │                              │
-   └──────────────────────────────┘
+   ┌─── 50-particle loop ───┐
+   │                         │
+   │  Position (sin + time)  │
+   │  Color (RGB by index)   │
+   │  Brightness (exponential)│
+   │  Trail (falloff + noise) │
+   │                         │
+   └─────────────────────────┘
         │
         ▼
-    Tonemap → Pantalla
+    Tonemap → Screen
 ```
 
-### La posición de cada cometa
+### Comet positioning
 
-Cada partícula tiene un centro calculado con funciones trigonométricas. La componente Y incluye una dependencia lineal del tiempo, lo que crea la caída constante:
+Each particle has a center calculated with trigonometric functions. The Y component includes a linear time dependency, creating the constant fall:
 
 ```glsl
 vec3 center = vec3(
@@ -142,43 +129,41 @@ vec3 center = vec3(
 );
 ```
 
-- `i` — índice de la partícula (0 a 49)
-- `t` — tiempo en segundos
-- `T` — tiempo modificado con componente espacial
+- `i` — particle index (0 to 49)
+- `t` — time in seconds
+- `T` — time modified with a spatial component
 
-El término `- i*0.15` distribuye las partículas verticalmente para que no aparezcan todas en el mismo punto.
-
----
-
-## Ajustes
-
-| Parámetro | Línea | Efecto |
-|-----------|-------|--------|
-| Velocidad de caída | `- t*0.5` | Aumentar para caer más rápido |
-| Separación vertical | `- i*0.15` | Aumentar para mayor dispersión |
-| Número de partículas | `n < 50` | Más partículas = más densidad |
-| Intensidad del brillo | `exp(sin(...))` | Factor multiplicativo directo |
+The `- i*0.15` term distributes particles vertically so they don't all appear at the same point.
 
 ---
 
-## Créditos
+## Tuning
 
-Este proyecto no existiría sin el trabajo de **[@XorDev][xordev-url]**, cuyo shader *Starship* sirvió como base y referencia.
-
-La inspiración visual viene del [vuelo de prueba número 7 de SpaceX Starship][inspiration-url] — los residuos luminosos que dejó en el cielo.
+| Parameter | Line | Effect |
+|-----------|------|--------|
+| Fall speed | `- t*0.5` | Increase to fall faster |
+| Vertical spread | `- i*0.15` | Increase for more dispersion |
+| Particle count | `n < 50` | More particles = more density |
+| Brightness intensity | `exp(sin(...))` | Direct multiplicative factor |
 
 ---
 
-## Licencia
+## Credits
 
-Distribuido bajo la licencia **MIT**. Usa este código como quieras.
+This project wouldn't exist without the work of **[@XorDev][xordev-url]**, whose *Starship* shader served as foundation and reference.
+
+The visual inspiration comes from [SpaceX's 7th Starship test flight][inspiration-url] — the luminous debris it left in the sky.
+
+---
+
+## License
+
+Distributed under the **MIT** license. Use this code however you want.
 
 ---
 
 <div align="center">
-
-*Hecho con WebGL y curiosidad.*
-
+Made with ❤️ by <a href="https://sebas-dev.vercel.app/" target="_blank" rel="noopener noreferrer">Sebastián V</a>
 </div>
 
 <!-- Badges -->
